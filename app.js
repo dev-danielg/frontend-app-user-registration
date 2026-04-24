@@ -109,4 +109,4 @@ if ('serviceWorker' in navigator) {
 }
 
 clearForm();
-loadEntries();
+loadUsers();
