@@ -1,11 +1,10 @@
-const API_URL = 'http://localhost:3000/api/entries';
+const API_URL = 'https://backend-app-user-registration.onrender.com/api/users';
 
-const form = document.getElementById('entry-form');
-const entryId = document.getElementById('entry-id');
-const title = document.getElementById('title');
-const description = document.getElementById('description');
-const happenedAt = document.getElementById('happenedAt');
-const entriesList = document.getElementById('entries-list');
+const form = document.getElementById('user-form');
+const userId = document.getElementById('user-id');
+const name = document.getElementById('name');
+const email = document.getElementById('email');
+const usersList = document.getElementById('users-list');
 const message = document.getElementById('message');
 const cancelEdit = document.getElementById('cancel-edit');
 const formTitle = document.getElementById('form-title');
@@ -17,40 +16,35 @@ function showMessage(text) {
 
 function clearForm() {
   form.reset();
-  entryId.value = '';
-  formTitle.textContent = 'Novo registro';
+  userId.value = '';
+  formTitle.textContent = 'Novo usuário';
   cancelEdit.classList.add('hidden');
-  happenedAt.value = new Date().toISOString().slice(0, 16);
 }
 
-function formatDate(date) {
-  return new Date(date).toLocaleString('pt-BR');
-}
 
-async function loadEntries() {
+async function loadUsers() {
   const response = await fetch(API_URL);
-  const entries = await response.json();
+  const users = await response.json();
 
-  if (!entries.length) {
-    entriesList.innerHTML = '<p>Nenhum registro encontrado.</p>';
+  if (!users.length) {
+    usersList.innerHTML = '<p>Nenhum usuário encontrado.</p>';
     return;
   }
 
-  entriesList.innerHTML = entries.map(entry => `
+  usersList.innerHTML = users.map(user => `
     <div class="entry-item">
-      <h3>${entry.title}</h3>
-      <p>${formatDate(entry.happenedAt)}</p>
-      <p>${entry.description}</p>
-      <div class="entry-buttons">
-        <button onclick="editEntry('${entry._id}')">Editar</button>
-        <button onclick="deleteEntry('${entry._id}')">Excluir</button>
+      <h3>${user.name}</h3>
+      <p>${user.email}</p>
+      <div class="user-buttons">
+        <button onclick="editEntry('${user._id}')">Editar</button>
+        <button onclick="deleteEntry('${user._id}')">Excluir</button>
       </div>
     </div>
   `).join('');
 }
 
-async function saveEntry(data) {
-  const id = entryId.value;
+async function saveUser(data) {
+  const id = userId.value;
   const url = id ? `${API_URL}/${id}` : API_URL;
   const method = id ? 'PUT' : 'POST';
 
@@ -61,22 +55,21 @@ async function saveEntry(data) {
   });
 }
 
-window.editEntry = async function (id) {
+window.editUser = async function (id) {
   const response = await fetch(`${API_URL}/${id}`);
-  const entry = await response.json();
+  const user = await response.json();
 
-  entryId.value = entry._id;
-  title.value = entry.title;
-  description.value = entry.description;
-  happenedAt.value = new Date(entry.happenedAt).toISOString().slice(0, 16);
+  userId.value = user._id;
+  name.value = user.name;
+  email.value = user.email;
 
-  formTitle.textContent = 'Editar registro';
+  formTitle.textContent = 'Editar usuário';
   cancelEdit.classList.remove('hidden');
-  showMessage('Editando registro.');
+  showMessage('Editando usuário.');
 };
 
-window.deleteEntry = async function (id) {
-  if (!confirm('Deseja excluir este registro?')) return;
+window.deleteUser = async function (id) {
+  if (!confirm('Deseja excluir este usuário?')) return;
 
   await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
   showMessage('Registro excluído.');
@@ -87,15 +80,14 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const data = {
-    title: title.value,
-    description: description.value,
-    happenedAt: happenedAt.value
+    name: name.value,
+    email: email.value,
   };
 
-  await saveEntry(data);
-  showMessage(entryId.value ? 'Registro atualizado.' : 'Registro criado.');
+  await saveUser(data);
+  showMessage(userId.value ? 'Usuário atualizado.' : 'Usuário criado.');
   clearForm();
-  loadEntries();
+  loadUsers();
 });
 
 cancelEdit.addEventListener('click', () => {
@@ -103,7 +95,7 @@ cancelEdit.addEventListener('click', () => {
   showMessage('Edição cancelada.');
 });
 
-reloadBtn.addEventListener('click', loadEntries);
+reloadBtn.addEventListener('click', loadUsers);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
