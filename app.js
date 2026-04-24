@@ -36,8 +36,8 @@ async function loadUsers() {
       <h3>${user.name}</h3>
       <p>${user.email}</p>
       <div class="user-buttons">
-        <button onclick="editEntry('${user._id}')">Editar</button>
-        <button onclick="deleteEntry('${user._id}')">Excluir</button>
+        <button onclick="editUser('${user._id}')">Editar</button>
+        <button onclick="deleteUser('${user._id}')">Excluir</button>
       </div>
     </div>
   `).join('');
