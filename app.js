@@ -73,7 +73,7 @@ window.deleteUser = async function (id) {
 
   await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
   showMessage('Registro excluído.');
-  loadEntries();
+  loadUsers();
 };
 
 form.addEventListener('submit', async (e) => {
